@@ -286,7 +286,7 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <div class="preorder-date-label">Дата предзаказа</div>
 <div class="preorder-date">01.01.2027</div>
 <div class="preorder-divider"></div>
-<p class="preorder-payment-note">После оплаты напиши мне во ВКонтакте. Для связи и получения предзаказа используй ссылку ниже.</p>
+<p class="preorder-payment-note">После оплаты напиши мне во ВКонтакте. Для связи и получения предзаказа используй ссылку ниже. Для подтверждения оплаты необходимо будет предоставить чек об оплате услуги.</p>
 <a class="vk-contact" id="preorder-vk" href="https://vk.com/" target="_blank" rel="noopener noreferrer">Связаться во ВКонтакте ↗</a>
 <div class="preorder-pay-area">
 <a class="donate-button preorder-pay disabled" id="preorder-pay" href="#" aria-disabled="true" tabindex="-1">Оплата скоро откроется</a>
@@ -318,7 +318,7 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
    3) Вставь адрес своего профиля в VK_CONTACT_URL.
 */
 const PREORDER_PAYMENT_ENABLED = false; // <-- ИЗМЕНИТЬ НА true
-const PREORDER_PAYMENT_URL = ''; // <-- ВСТАВИТЬ ССЫЛКУ НА ОПЛАТУ
+const PREORDER_PAYMENT_URL = 'https://www.donationalerts.com/r/stenchiki111gg'; // <-- ССЫЛКА НА ОПЛАТУ УЖЕ УКАЗАНА
 const VK_CONTACT_URL = ''; // <-- ВСТАВИТЬ ССЫЛКУ НА ПРОФИЛЬ ВК
 
 const preorderPay = document.getElementById('preorder-pay');
@@ -336,7 +336,7 @@ if (preorderPay && PREORDER_PAYMENT_ENABLED && /^https:\/\//i.test(PREORDER_PAYM
   preorderPay.removeAttribute('tabindex');
   preorderPay.target = '_blank';
   preorderPay.rel = 'noopener noreferrer';
-  if (preorderPayHint) preorderPayHint.textContent = 'После оплаты напиши во ВКонтакте для связи и получения предзаказа.';
+  if (preorderPayHint) preorderPayHint.textContent = 'После оплаты напиши во ВКонтакте, предоставь чек об оплате услуги — это нужно для подтверждения платежа и получения предзаказа.';
 }
 
 const nav = document.querySelector('.nav');
