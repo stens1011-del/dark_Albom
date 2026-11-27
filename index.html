@@ -136,6 +136,19 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 .note{font-size:17px;color:#9e9181}
 .footer{padding:25px;text-align:center;color:#8f8579;font-size:14px;letter-spacing:.12em;border-top:1px solid #8e7c6544}
 
+/* Кнопка мобильного меню — скрыта на больших экранах */
+.menu-toggle{
+display:none;
+border:1px solid #8f7657;
+background:#211b20;
+color:#ead6bd;
+padding:9px 13px;
+font-size:14px;
+letter-spacing:.12em;
+cursor:pointer;
+}
+.menu-toggle:hover{background:#8b68401c;color:#f0d2a9}
+
 @media(max-width:800px){
 .topbar{width:calc(100% - 28px);padding:12px 0;align-items:flex-start;flex-direction:column;gap:8px}
 .nav{justify-content:flex-start;width:100%;gap:3px}
@@ -146,10 +159,38 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 .hero-content{padding:20px 0 36px}
 }
 
+@media(max-width:650px){
+.topbar{
+width:calc(100% - 28px);
+min-height:64px;
+padding:10px 0;
+display:grid;
+grid-template-columns:1fr auto;
+align-items:center;
+gap:8px;
+}
+.menu-toggle{display:block;grid-column:2;grid-row:1}
+.nav{
+display:none;
+grid-column:1 / -1;
+width:100%;
+padding:8px 0 12px;
+flex-direction:column;
+align-items:stretch;
+gap:5px;
+}
+.nav.open{display:flex}
+.nav button{
+width:100%;
+text-align:left;
+font-size:16px;
+padding:10px 12px;
+}
+.brand{font-size:30px}
+}
+
 @media(max-width:480px){
 .cards{grid-template-columns:1fr}
-.nav button{font-size:15px;padding:7px 8px}
-.brand{font-size:30px}
 .track{font-size:19px}
 }
 </style>
@@ -160,7 +201,8 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <div class="header">
 <div class="topbar">
 <a class="brand" href="#" aria-label="STEN — главная" data-tab-link="home">STEN</a>
-<nav class="nav" role="tablist" aria-label="Разделы сайта">
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">МЕНЮ ☰</button>
+<nav class="nav" id="site-nav" role="tablist" aria-label="Разделы сайта">
 <button role="tab" aria-selected="true" data-tab="home">Главная</button>
 <button role="tab" aria-selected="false" data-tab="album">Об альбоме</button>
 <button role="tab" aria-selected="false" data-tab="azeroth">Мир Азерот</button>
@@ -290,7 +332,21 @@ document.querySelector('main').scrollIntoView({behavior:'smooth',block:'start'})
 history.replaceState(null,'','#'+selected);
 }
 
-tabs.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+const menuToggle=document.querySelector('.menu-toggle');
+const siteNav=document.querySelector('.nav');
+
+menuToggle.addEventListener('click',()=>{
+const isOpen=siteNav.classList.toggle('open');
+menuToggle.setAttribute('aria-expanded',String(isOpen));
+menuToggle.textContent=isOpen?'ЗАКРЫТЬ ✕':'МЕНЮ ☰';
+});
+
+tabs.forEach(b=>b.addEventListener('click',()=>{
+showTab(b.dataset.tab);
+siteNav.classList.remove('open');
+menuToggle.setAttribute('aria-expanded','false');
+menuToggle.textContent='МЕНЮ ☰';
+}));
 
 document.querySelectorAll('[data-tab-link]').forEach(a=>a.addEventListener('click',e=>{
 e.preventDefault();
