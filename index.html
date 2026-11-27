@@ -312,25 +312,23 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <footer class="footer">✦ STEN · МРАЧНО-СКАЗОЧНЫЙ МИР · 2027 ✦</footer>
 
 <script>
-/* НАСТРОЙКИ ПРЕДЗАКАЗА — ИЗМЕНИ ЭТИ ЗНАЧЕНИЯ, ЧТОБЫ ВКЛЮЧИТЬ ОПЛАТУ
-   1) PREORDER_PAYMENT_ENABLED: поменяй false на true.
-   2) PREORDER_PAYMENT_URL: вставь полную ссылку на страницу оплаты.
-   3) VK_CONTACT_URL: вставь ссылку на свой профиль ВКонтакте.
-   Пока не заполнены ссылка оплаты и VK, кнопка оплаты останется выключенной.
+/* НАСТРОЙКИ ПРЕДЗАКАЗА
+   1) Поменяй false на true, когда будешь готов принимать оплату.
+   2) Вставь платёжную ссылку в PREORDER_PAYMENT_URL.
+   3) Вставь адрес своего профиля в VK_CONTACT_URL.
 */
-const PREORDER_PAYMENT_ENABLED = false; // <-- поменять на true после настройки оплаты
-const PREORDER_PAYMENT_URL = ''; // <-- ВСТАВЬ ССЫЛКУ НА ОПЛАТУ
-const VK_CONTACT_URL = ''; // <-- ВСТАВЬ ССЫЛКУ НА СВОЙ ПРОФИЛЬ VK
+const PREORDER_PAYMENT_ENABLED = false; // <-- ИЗМЕНИТЬ НА true
+const PREORDER_PAYMENT_URL = ''; // <-- ВСТАВИТЬ ССЫЛКУ НА ОПЛАТУ
+const VK_CONTACT_URL = ''; // <-- ВСТАВИТЬ ССЫЛКУ НА ПРОФИЛЬ ВК
 
 const preorderPay = document.getElementById('preorder-pay');
 const preorderPayHint = document.getElementById('preorder-pay-hint');
 const preorderVk = document.getElementById('preorder-vk');
-const validPaymentUrl = /^https:\/\//i.test(PREORDER_PAYMENT_URL);
-const validVkUrl = /^https:\/\//i.test(VK_CONTACT_URL);
 
-if (validVkUrl) preorderVk.href = VK_CONTACT_URL;
-
-if (PREORDER_PAYMENT_ENABLED && validPaymentUrl) {
+if (preorderVk && /^https:\/\//i.test(VK_CONTACT_URL)) {
+  preorderVk.href = VK_CONTACT_URL;
+}
+if (preorderPay && PREORDER_PAYMENT_ENABLED && /^https:\/\//i.test(PREORDER_PAYMENT_URL)) {
   preorderPay.href = PREORDER_PAYMENT_URL;
   preorderPay.textContent = 'Оплатить ↗';
   preorderPay.classList.remove('disabled');
@@ -338,48 +336,61 @@ if (PREORDER_PAYMENT_ENABLED && validPaymentUrl) {
   preorderPay.removeAttribute('tabindex');
   preorderPay.target = '_blank';
   preorderPay.rel = 'noopener noreferrer';
-  preorderPayHint.textContent = 'После оплаты напиши во ВКонтакте для связи и получения предзаказа.';
+  if (preorderPayHint) preorderPayHint.textContent = 'После оплаты напиши во ВКонтакте для связи и получения предзаказа.';
 }
 
-const tabs=[...document.querySelectorAll('[data-tab]')];
-const panels=[...document.querySelectorAll('.tab-panel')];
+const nav = document.querySelector('.nav');
+const menuToggle = document.querySelector('.menu-toggle');
+const tabButtons = Array.from(document.querySelectorAll('.nav [data-tab]'));
+const panels = Array.from(document.querySelectorAll('.tab-panel'));
+const validTabs = ['album', 'azeroth', 'creatures', 'tracks', 'preorder', 'support'];
 
-function showTab(name){
-const valid=['album','azeroth','creatures','tracks','preorder','support'];
-const selected=valid.includes(name)?name:'home';
+function showTab(name) {
+  const selected = validTabs.includes(name) ? name : 'home';
+  tabButtons.forEach(button => {
+    button.setAttribute('aria-selected', String(button.dataset.tab === selected));
+  });
+  panels.forEach(panel => {
+    panel.classList.toggle('active', panel.id === 'panel-' + selected);
+  });
 
-tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===selected)));
-panels.forEach(p=>p.classList.toggle('active',p.id==='panel-'+selected));
+  if (selected === 'home') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    const main = document.querySelector('main');
+    if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  history.replaceState(null, '', '#' + selected);
 
-if(selected==='home'){
-window.scrollTo({top:0,behavior:'smooth'});
-}else{
-document.querySelector('main').scrollIntoView({behavior:'smooth',block:'start'});
+  if (nav) nav.classList.remove('open');
+  if (menuToggle) {
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.textContent = 'МЕНЮ ☰';
+  }
 }
 
-history.replaceState(null,'','#'+selected);
-}
-
-const menuToggle=document.querySelector('.menu-toggle');
-const siteNav=document.querySelector('.nav');
-menuToggle.addEventListener('click',()=>{
-const isOpen=siteNav.classList.toggle('open');
-menuToggle.setAttribute('aria-expanded',String(isOpen));
-menuToggle.textContent=isOpen?'ЗАКРЫТЬ ✕':'МЕНЮ ☰';
+tabButtons.forEach(button => {
+  button.addEventListener('click', () => showTab(button.dataset.tab));
 });
-tabs.forEach(b=>b.addEventListener('click',()=>{
-showTab(b.dataset.tab);
-siteNav.classList.remove('open');
-menuToggle.setAttribute('aria-expanded','false');
-menuToggle.textContent='МЕНЮ ☰';
-}));
-document.querySelectorAll('[data-tab-link]').forEach(a=>a.addEventListener('click',e=>{
-e.preventDefault();
-showTab(a.dataset.tabLink);
-}));
 
-const initial=location.hash.slice(1);
-if(initial && initial!=='home') showTab(initial);
+document.querySelectorAll('[data-tab-link]').forEach(link => {
+  link.addEventListener('click', event => {
+    event.preventDefault();
+    showTab(link.dataset.tabLink);
+  });
+});
+
+if (menuToggle && nav) {
+  menuToggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+    menuToggle.textContent = isOpen ? 'ЗАКРЫТЬ ✕' : 'МЕНЮ ☰';
+  });
+}
+
+const initialTab = location.hash.slice(1);
+if (initialTab && initialTab !== 'home') showTab(initialTab);
+else showTab('home');
 </script>
 
 </body>
