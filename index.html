@@ -161,6 +161,19 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 
   /* На телефонах используем отдельную обложку; на компьютерах остаётся cover.png */
 @media(max-width:650px){.hero:before{background-image:linear-gradient(180deg,#09080bc9,#09080b38 42%,#09080bd9),url('cover2.png');background-position:center 63%}}
+
+.hero-actions{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap}
+.preorder-enter{background:#5b3b2838;border-color:#c18b58}
+.nav .preorder-nav{border-color:#a47a4e;color:#e8c49b}
+.preorder-date-label{margin-top:24px;color:#c7b9a6;letter-spacing:.25em;text-transform:uppercase;font-size:15px}
+.preorder-date{font-size:clamp(42px,7vw,72px);letter-spacing:.12em;color:#ead6bd;margin:8px 0 22px}
+.preorder-divider{width:min(360px,75%);height:1px;background:linear-gradient(90deg,transparent,#a47a4e,transparent);margin:24px auto}
+.preorder-payment-note{max-width:680px;margin:0 auto 18px}
+.vk-contact{display:inline-block;color:#e8c49b;border-bottom:1px solid #a47a4e;padding:8px 4px;font-size:20px}
+.preorder-pay-area{margin-top:28px}
+.preorder-pay.disabled{opacity:.48;cursor:not-allowed;pointer-events:none;filter:grayscale(.45)}
+@media(max-width:650px){.hero-actions{gap:8px}.hero-actions .enter{padding:11px 15px;font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -176,6 +189,7 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <button role="tab" aria-selected="false" data-tab="azeroth">Мир Азерот</button>
 <button role="tab" aria-selected="false" data-tab="creatures">Персонажи</button>
 <button role="tab" aria-selected="false" data-tab="tracks">Трек-лист</button>
+<button class="preorder-nav" role="tab" aria-selected="false" data-tab="preorder">Предзаказ</button>
 <button class="support-tab" role="tab" aria-selected="false" data-tab="support">Поддержать</button>
 </nav>
 </div>
@@ -188,7 +202,7 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <div class="ornament">✦</div>
 <div class="release">Дата выхода альбома</div>
 <div class="date">XX.XX.2027</div>
-<a class="enter" href="#" data-tab-link="album">Открыть врата</a>
+<div class="hero-actions"><a class="enter" href="#" data-tab-link="album">Открыть врата</a><a class="enter preorder-enter" href="#" data-tab-link="preorder">Предзаказ</a></div>
 </div>
 </header>
 
@@ -264,6 +278,24 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 </div>
 </section>
 
+<section class="tab-panel" id="panel-preorder" role="tabpanel">
+<div class="inner donate-wrap preorder-wrap">
+<div class="donate-mark">✦ ✧ ✦</div>
+<div class="kicker">Ранний доступ · STEN</div>
+<h2>Предзаказ альбома</h2>
+<p>Оформи предзаказ альбома «Мрачно-Сказочный мир» и стань одним из первых слушателей.</p>
+<div class="preorder-date-label">Дата предзаказа</div>
+<div class="preorder-date">01.01.2027</div>
+<div class="preorder-divider"></div>
+<p class="preorder-payment-note">После оплаты напиши мне во ВКонтакте. Для связи и получения предзаказа используй ссылку ниже.</p>
+<a class="vk-contact" id="preorder-vk" href="https://vk.com/" target="_blank" rel="noopener noreferrer">Связаться во ВКонтакте ↗</a>
+<div class="preorder-pay-area">
+<a class="donate-button preorder-pay disabled" id="preorder-pay" href="#" aria-disabled="true" tabindex="-1">Оплата скоро откроется</a>
+<div class="note" id="preorder-pay-hint">Кнопка оплаты пока отключена.</div>
+</div>
+</div>
+</section>
+
 <section class="tab-panel" id="panel-support" role="tabpanel">
 <div class="inner donate-wrap">
 <div class="donate-mark">✦ ✧ ✦</div>
@@ -281,11 +313,40 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <footer class="footer">✦ STEN · МРАЧНО-СКАЗОЧНЫЙ МИР · 2027 ✦</footer>
 
 <script>
+/* НАСТРОЙКИ ПРЕДЗАКАЗА — ИЗМЕНИ ЭТИ ЗНАЧЕНИЯ, ЧТОБЫ ВКЛЮЧИТЬ ОПЛАТУ
+   1) PREORDER_PAYMENT_ENABLED: поменяй false на true.
+   2) PREORDER_PAYMENT_URL: вставь полную ссылку на страницу оплаты.
+   3) VK_CONTACT_URL: вставь ссылку на свой профиль ВКонтакте.
+   Пока не заполнены ссылка оплаты и VK, кнопка оплаты останется выключенной.
+*/
+const PREORDER_PAYMENT_ENABLED = false; // <-- поменять на true после настройки оплаты
+const PREORDER_PAYMENT_URL = ''; // <-- ВСТАВЬ ССЫЛКУ НА ОПЛАТУ
+const VK_CONTACT_URL = ''; // <-- ВСТАВЬ ССЫЛКУ НА СВОЙ ПРОФИЛЬ VK
+
+const preorderPay = document.getElementById('preorder-pay');
+const preorderPayHint = document.getElementById('preorder-pay-hint');
+const preorderVk = document.getElementById('preorder-vk');
+const validPaymentUrl = /^https:\/\//i.test(PREORDER_PAYMENT_URL);
+const validVkUrl = /^https:\/\//i.test(VK_CONTACT_URL);
+
+if (validVkUrl) preorderVk.href = VK_CONTACT_URL;
+
+if (PREORDER_PAYMENT_ENABLED && validPaymentUrl) {
+  preorderPay.href = PREORDER_PAYMENT_URL;
+  preorderPay.textContent = 'Оплатить ↗';
+  preorderPay.classList.remove('disabled');
+  preorderPay.removeAttribute('aria-disabled');
+  preorderPay.removeAttribute('tabindex');
+  preorderPay.target = '_blank';
+  preorderPay.rel = 'noopener noreferrer';
+  preorderPayHint.textContent = 'После оплаты напиши во ВКонтакте для связи и получения предзаказа.';
+}
+
 const tabs=[...document.querySelectorAll('[data-tab]')];
 const panels=[...document.querySelectorAll('.tab-panel')];
 
 function showTab(name){
-const valid=['album','azeroth','creatures','tracks','support'];
+const valid=['album','azeroth','creatures','tracks','preorder','support'];
 const selected=valid.includes(name)?name:'home';
 
 tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===selected)));
