@@ -159,8 +159,8 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 }
 @media(max-width:480px){.cards{grid-template-columns:1fr}.track{font-size:19px}}
 
-  /* На телефонах сдвигаем фоновую обложку максимально вверх, чтобы встроенные надписи ушли за верхний край */
-@media(max-width:650px){.hero:before{background-position:center 100%}}
+  /* На телефонах используем отдельную обложку; на компьютерах остаётся cover.png */
+@media(max-width:650px){.hero:before{background-image:linear-gradient(180deg,#09080bc9,#09080b38 42%,#09080bd9),url('cover2.png');background-position:center 63%}}
 </style>
 </head>
 <body>
