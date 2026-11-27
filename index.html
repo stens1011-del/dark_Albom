@@ -171,6 +171,9 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 .preorder-payment-note{max-width:680px;margin:0 auto 18px}
 .vk-contact{display:inline-block;color:#e8c49b;border-bottom:1px solid #a47a4e;padding:8px 4px;font-size:20px}
 .preorder-pay-area{margin-top:28px}
+.preorder-price{margin:0 0 16px;font-size:clamp(24px,4vw,34px);letter-spacing:.04em;color:#ead6bd}
+.preorder-price del{color:#a99a89;opacity:.8;margin-right:12px;font-size:.8em}
+.preorder-price strong{color:#e8c49b;font-weight:700}
 .preorder-pay.disabled{opacity:.48;cursor:not-allowed;pointer-events:none;filter:grayscale(.45)}
 @media(max-width:650px){.hero-actions{gap:8px}.hero-actions .enter{padding:11px 15px;font-size:13px}}
 
@@ -289,6 +292,7 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 <p class="preorder-payment-note">После оплаты напиши мне во ВКонтакте. Для связи и получения предзаказа используй ссылку ниже. Для подтверждения оплаты необходимо будет предоставить чек об оплате услуги.</p>
 <a class="vk-contact" id="preorder-vk" href="https://vk.ru/mevi_26" target="_blank" rel="noopener noreferrer">Связаться во ВКонтакте ↗</a>
 <div class="preorder-pay-area">
+<div class="preorder-price" id="preorder-price" style="display:none"><del>499р</del> <strong>250р</strong></div>
 <a class="donate-button preorder-pay disabled" id="preorder-pay" href="#" aria-disabled="true" tabindex="-1">Оплата скоро откроется</a>
 <div class="note" id="preorder-pay-hint">Кнопка оплаты пока отключена.</div>
 </div>
@@ -329,6 +333,8 @@ if (preorderVk && /^https:\/\//i.test(VK_CONTACT_URL)) {
   preorderVk.href = VK_CONTACT_URL;
 }
 if (preorderPay && PREORDER_PAYMENT_ENABLED && /^https:\/\//i.test(PREORDER_PAYMENT_URL)) {
+  const preorderPrice = document.getElementById('preorder-price');
+  if (preorderPrice) preorderPrice.style.display = 'block';
   preorderPay.href = PREORDER_PAYMENT_URL;
   preorderPay.textContent = 'Оплатить ↗';
   preorderPay.classList.remove('disabled');
