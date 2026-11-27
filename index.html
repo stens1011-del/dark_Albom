@@ -159,8 +159,8 @@ p{font-size:clamp(20px,2.2vw,24px);line-height:1.55;color:#c9bdad;margin:0 0 18p
 }
 @media(max-width:480px){.cards{grid-template-columns:1fr}.track{font-size:19px}}
 
-  /* На телефонах поднимаем фоновую обложку выше, чтобы надписи на изображении не попадали в видимую область */
-@media(max-width:650px){.hero:before{background-position:center 38%}}
+  /* На телефонах сдвигаем фоновую обложку максимально вверх, чтобы встроенные надписи ушли за верхний край */
+@media(max-width:650px){.hero:before{background-position:center 100%}}
 </style>
 </head>
 <body>
